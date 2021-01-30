@@ -24,84 +24,146 @@ function createCanvas(){ //Changing the canvas size to what we want
     ctx.closePath();
 }
 
-function move(){
-    t1 = 0;
+var RIGHT = false;
+var LEFT = false;
+var UP = false;
+var DOWN = false;
+
+function handleInputs(){
     document.addEventListener('keydown', (event) => {
-        t2 = Date.now();
-        if (t2 - t1 > 1000){    //Limitation to 1 move per second 
-            t1 = Date.now();
-
-            if (event.key == "ArrowRight" && X[0]+x<h){
-                ctx.fillStyle = 'black';    //Deleting ancient square
-                ctx.beginPath();
-                ctx.rect(X,Y,x,x);
-                ctx.fill();
-                ctx.closePath();
-
-                ctx.fillStyle = 'white';    //Creating a square at the new position
-                ctx.beginPath();
-                ctx.rect(X[0]+x,Y[0],x,x);
-                ctx.fill();
-                ctx.closePath();
-
-                for (k=0;k<X.length;k++){
-                    X[k] = X[k]+x;
-                }
+        if (event.key == "ArrowRight"){
+            if (RIGHT == false){
+                RIGHT = true;
+                right();
             }
-
-            if (event.key == "ArrowLeft" && X[0]>0){
-                ctx.fillStyle = 'black';    //Deleting ancient square
-                ctx.beginPath();
-                ctx.rect(X,Y,x,x);
-                ctx.fill();
-                ctx.closePath();
-
-                ctx.fillStyle = 'white';    //Creating a square at the new position
-                ctx.beginPath();
-                ctx.rect(X[0]-x,Y[0],x,x);
-                ctx.fill();
-                ctx.closePath();
-
-                for (k=0;k<X.length;k++){
-                    X[k] = X[k]-x;
-                }
+        }
+        if (event.key == "ArrowLeft"){
+            if (LEFT == false){
+                LEFT = true;
+                left();
             }
-
-            if (event.key == "ArrowUp" && Y[0]>0){
-                ctx.fillStyle = 'black';    //Deleting ancient square
-                ctx.beginPath();
-                ctx.rect(X[0],Y[0],x,x);
-                ctx.fill();
-                ctx.closePath();
-
-                ctx.fillStyle = 'white';    //Creating a square at the new position
-                ctx.beginPath();
-                ctx.rect(X[0],Y[0]-x,x,x);
-                ctx.fill();
-                ctx.closePath();
-
-                for (k=0;k<Y.length;k++){
-                    Y[k] = Y[k]-x;
-                }
+        }
+        if (event.key == "ArrowUp"){
+            if (UP == false){
+                UP = true;
+                up();
             }
-
-            if (event.key == "ArrowDown" && Y[0]+x<h){
-                ctx.fillStyle = 'black';    //Deleting ancient square
-                ctx.beginPath();
-                ctx.rect(X[0],Y[0],x,x);
-                ctx.fill();
-                ctx.closePath();
-
-                ctx.fillStyle = 'white';    //Creating a square at the new position
-                ctx.beginPath();
-                ctx.rect(X[0],Y[0]+x,x,x);
-                ctx.fill();
-                ctx.closePath();
-
-                for (k=0;k<Y.length;k++){
-                    Y[k] = Y[k]+x;
-                }
+        }
+        if (event.key == "ArrowDown"){
+            if (DOWN == false){
+                DOWN = true;
+                down();
             }
         }
     })
+}
+
+function handleOutputs(){
+    document.addEventListener('keyup', (event) => {
+        if (event.key == "ArrowRight"){
+            if (RIGHT == true){
+                RIGHT = false;
+            }
+        }
+        if (event.key == "ArrowLeft"){
+            if (LEFT == true){
+                LEFT = false;
+            }
+        }
+        if (event.key == "ArrowUp"){
+            if (UP == true){
+                UP = false;
+            }
+        }
+        if (event.key == "ArrowDown"){
+            if (DOWN == true){
+                DOWN = false;
+            }
+        }
+    })
+}
+
+function right(){
+    if (X[0]+x<h && RIGHT == true){
+        ctx.fillStyle = 'black';    //Deleting ancient square
+        ctx.beginPath();
+        ctx.rect(X,Y,x,x);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle = 'white';    //Creating a square at the new position
+        ctx.beginPath();
+        ctx.rect(X[0]+x,Y[0],x,x);
+        ctx.fill();
+        ctx.closePath();
+
+        for (k=0;k<X.length;k++){
+            X[k] = X[k]+x;
+        }
+    }
+    setTimeout(right, 500);
+}
+
+function left(){
+    if (X[0]>0 && LEFT == true){
+        ctx.fillStyle = 'black';    //Deleting ancient square
+        ctx.beginPath();
+        ctx.rect(X,Y,x,x);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle = 'white';    //Creating a square at the new position
+        ctx.beginPath();
+        ctx.rect(X[0]-x,Y[0],x,x);
+        ctx.fill();
+        ctx.closePath();
+
+        for (k=0;k<X.length;k++){
+            X[k] = X[k]-x;
+        }
+    }
+    setTimeout(left, 500);
+}
+
+
+function up(){
+    if (Y[0]>0 && UP == true){
+        ctx.fillStyle = 'black';    //Deleting ancient square
+        ctx.beginPath();
+        ctx.rect(X[0],Y[0],x,x);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle = 'white';    //Creating a square at the new position
+        ctx.beginPath();
+        ctx.rect(X[0],Y[0]-x,x,x);
+        ctx.fill();
+        ctx.closePath();
+
+        for (k=0;k<Y.length;k++){
+            Y[k] = Y[k]-x;
+        }
+    }
+    setTimeout(up, 500);
+}
+
+function down(){
+    if (Y[0]+x<h && DOWN == true){
+        ctx.fillStyle = 'black';    //Deleting ancient square
+        ctx.beginPath();
+        ctx.rect(X[0],Y[0],x,x);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle = 'white';    //Creating a square at the new position
+        ctx.beginPath();
+        ctx.rect(X[0],Y[0]+x,x,x);
+        ctx.fill();
+        ctx.closePath();
+
+        for (k=0;k<Y.length;k++){
+            Y[k] = Y[k]+x;
+        }
+    }
+    setTimeout(down, 500);
 }
