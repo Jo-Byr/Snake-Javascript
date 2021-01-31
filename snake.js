@@ -1,8 +1,8 @@
 const H = window.screen.height;
 const x = Math.floor((2/3)*H/25); //x represents the width of one of the elementary squares composing the snake, we want the canvas to be 25 squares wide
 const h = 25*x;
-var X = [(h+x)/2,(h-x)/2,(h-3*x)/2];    //Axis of the top left corner of the square
-var Y = [(h-x)/2,(h-x)/2,(h-x)/2];    //Ordinate of the top left corner of the square
+var X = [(h+x)/2,(h-x)/2,(h-3*x)/2];    //Axis of the top left corner of the squares
+var Y = [(h-x)/2,(h-x)/2,(h-x)/2];    //Ordinate of the top left corner of the squares
 cnv = document.getElementById("Canvas")
 
 ctx = cnv.getContext("2d");
@@ -17,30 +17,28 @@ function createCanvas(){ //Changing the canvas size to what we want
     ctx.fill();
     ctx.closePath();
 
-    ctx.fillStyle = 'white';    
-    //ctx.beginPath();    //First elementary square
+    ctx.fillStyle = 'white';    //Creating the squares
     ctx.fillRect((h-3*x)/2,(h-x)/2,x,x);
     ctx.fillRect((h-x)/2,(h-x)/2,x,x);
     ctx.fillRect((h+x)/2,(h-x)/2,x,x);
-    //ctx.fill();
-    //ctx.closePath();
 }
 
+var oldDIR = true;
 var DIR = true;
 var PRESSED = false;
 
-function handleInputs(){
+function handleInputs(){    //Function called onload, bind the keys
     document.addEventListener('keydown', (event) => {
-        if (event.key == "ArrowRight" && DIR != "left"){
+        if (event.key == "ArrowRight" && DIR != "left" && oldDIR != "left"){
             DIR = "right";
         }
-        else if (event.key == "ArrowLeft" && DIR != "right"){
+        else if (event.key == "ArrowLeft" && DIR != "right" && oldDIR != "right"){
             DIR = "left";
         }
-        else if (event.key == "ArrowUp" && DIR != "down"){
+        else if (event.key == "ArrowUp" && DIR != "down" && oldDIR != "down"){
             DIR = "up";
         }
-        else if (event.key == "ArrowDown" && DIR != "up"){
+        else if (event.key == "ArrowDown" && DIR != "up" && oldDIR != "up"){
             DIR = "down";
         }
         if (PRESSED == false){
@@ -50,7 +48,7 @@ function handleInputs(){
     })
 }
 
-function move(){
+function move(){    //Function allowing the moves, called every 0.5s and change the direction according to the variable DIR
     if (X[0]+x<h && DIR == "right"){
         ctx.fillStyle = 'black';    //Deleting ancient square
         ctx.beginPath();
@@ -127,5 +125,6 @@ function move(){
         }
         Y[0] += x;
     }
-    setTimeout(move, 500);
+    oldDIR = DIR;
+    setTimeout(move, 300);
 }
