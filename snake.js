@@ -1,55 +1,4 @@
-const H = window.screen.height;
-const x = Math.floor((2/3)*H/25); //x represents the width of one of the elementary squares composing the snake, we want the canvas to be 25 squares wide
-const h = 25*x;
-var X = [(h+x)/2,(h-x)/2,(h-3*x)/2];    //Axis of the top left corner of the squares
-var Y = [(h-x)/2,(h-x)/2,(h-x)/2];    //Ordinate of the top left corner of the squares
-cnv = document.getElementById("Canvas")
-
-ctx = cnv.getContext("2d");
-
-function createCanvas(){ //Changing the canvas size to what we want
-    cnv.height = h;
-    cnv.width = h;
-    
-    ctx.fillStyle = 'black';    //Black background
-    ctx.beginPath();
-    ctx.rect(0,0,h,h);
-    ctx.fill();
-    ctx.closePath();
-
-    ctx.fillStyle = 'white';    //Creating the squares
-    ctx.fillRect((h-3*x)/2,(h-x)/2,x,x);
-    ctx.fillRect((h-x)/2,(h-x)/2,x,x);
-    ctx.fillRect((h+x)/2,(h-x)/2,x,x);
-}
-
-var oldDIR = true;
-var DIR = true;
-var PRESSED = false;
-var LOST = false;
-
-function handleInputs(){    //Function called onload, bind the keys
-    document.addEventListener('keydown', (event) => {
-        if (event.key == "ArrowRight" && DIR != "left" && oldDIR != "left"){
-            DIR = "right";
-        }
-        else if (event.key == "ArrowLeft" && DIR != "right" && oldDIR != "right"){
-            DIR = "left";
-        }
-        else if (event.key == "ArrowUp" && DIR != "down" && oldDIR != "down"){
-            DIR = "up";
-        }
-        else if (event.key == "ArrowDown" && DIR != "up" && oldDIR != "up"){
-            DIR = "down";
-        }
-        if (PRESSED == false && ["ArrowDown","ArrowUp","ArrowLeft","ArrowRight"].includes(event.key)){
-            move()
-            PRESSED = true
-        }
-    })
-}
-
-function move(){    //Function allowing the moves, called every 0.5s and change the direction according to the variable DIR
+function move(){    //Function allowing the moves, called every 0.2s and change the direction according to the variable DIR
     if (X.length == 0){
         LOST = true;
     }
@@ -61,6 +10,12 @@ function move(){    //Function allowing the moves, called every 0.5s and change 
         ctx.closePath();
 
         ctx.fillStyle = 'white';    //Creating a square at the new position
+        ctx.beginPath();
+        ctx.rect(X[0],Y[0],x,x);
+        ctx.fill();
+        ctx.closePath();
+        
+        ctx.fillStyle = 'grey';    //Creating a square at the new position
         ctx.beginPath();
         ctx.rect(X[0]+x,Y[0],x,x);
         ctx.fill();
@@ -89,6 +44,12 @@ function move(){    //Function allowing the moves, called every 0.5s and change 
         ctx.closePath();
 
         ctx.fillStyle = 'white';    //Creating a square at the new position
+        ctx.beginPath();
+        ctx.rect(X[0],Y[0],x,x);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle = 'grey';    //Creating a square at the new position
         ctx.beginPath();
         ctx.rect(X[0]-x,Y[0],x,x);
         ctx.fill();
@@ -119,10 +80,16 @@ function move(){    //Function allowing the moves, called every 0.5s and change 
 
         ctx.fillStyle = 'white';    //Creating a square at the new position
         ctx.beginPath();
-        ctx.rect(X[0],Y[0]-x,x,x);
+        ctx.rect(X[0],Y[0],x,x);
         ctx.fill();
         ctx.closePath();
 
+        ctx.fillStyle = 'grey';    //Creating a square at the new position
+        ctx.beginPath();
+        ctx.rect(X[0],Y[0]-x,x,x);
+        ctx.fill();
+        ctx.closePath();
+        
         for (k=X.length-1;k>0;k--){
             X[k] = X[k-1];
             Y[k] = Y[k-1];
@@ -148,6 +115,12 @@ function move(){    //Function allowing the moves, called every 0.5s and change 
 
         ctx.fillStyle = 'white';    //Creating a square at the new position
         ctx.beginPath();
+        ctx.rect(X[0],Y[0],x,x);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle = 'grey';    //Creating a square at the new position
+        ctx.beginPath();
         ctx.rect(X[0],Y[0]+x,x,x);
         ctx.fill();
         ctx.closePath();
@@ -168,6 +141,23 @@ function move(){    //Function allowing the moves, called every 0.5s and change 
         X.pop();
         Y.pop();
     }
+
+    
+    if (X.slice(1,X.length).includes(X[0])){ // If a square of the square of the snake, has the same abciss as the head
+        k = 1;
+        while (!(Y[k] == Y[0] && X[k] == X[0]) && k<X.length){ //We search if it also has the same ordinate
+            k += 1;
+        }
+        if (k < X.length - 1){ //If so, we delete, visually and in the lists of abcisses and ordinates, the square after the overlapped square
+            for (i = k+1;i<X.length;i++){
+                ctx.fillStyle = "black";
+                ctx.fillRect(X[i],Y[i],x,x)
+            }
+            X.splice(k, X.length - k)
+            Y.splice(k, Y.length - k)
+        }
+    }
+
     if (APPLES_X.includes(X[0]) && APPLES_Y.includes(Y[0])){ //If an apple is eaten, we get rid of its coordinates
         for (k=0;k<APPLES_X.length;k++){
             if (X[0] == APPLES_X[k] && Y[0] == APPLES_Y[k]){
@@ -305,27 +295,7 @@ function move(){    //Function allowing the moves, called every 0.5s and change 
     }
     oldDIR = DIR;
     if (LOST == false){
-        console.log(X.length)
         apples()
-        setTimeout(move, 150);
-    }
-}
-
-var APPLES_X = [];
-var APPLES_Y = [];
-function apples(){
-    pop = Math.floor(Math.random() * 10)
-    if (pop == 0){
-        appleX = Math.floor(Math.random() * 25)*x;
-        appleY = Math.floor(Math.random() * 25)*x;
-        if (!(X.includes(appleX) && Y.includes(appleY))){ //Verifying the apple tries not to spawn where a square of the snake already is
-            APPLES_X.push(appleX)
-            APPLES_Y.push(appleY)
-            ctx.fillStyle = 'red';    //Creating a square at the new position
-            ctx.beginPath();
-            ctx.rect(appleX+x/4,appleY+x/4,x/2,x/2);
-            ctx.fill();
-            ctx.closePath();
-        }
+        setTimeout(move, 200);
     }
 }
